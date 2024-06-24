@@ -1,0 +1,12 @@
+.listing li{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.listing img{
+    max-width: 200px;
+    height: 200px;
+    border-radius: 10px;
+}

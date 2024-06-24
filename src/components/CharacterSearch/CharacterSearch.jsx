@@ -1,51 +1,45 @@
 import { useState, useEffect } from "react";
 import CharacterList from "../CharacterList/CharacterList";
+import "./CharacterSearch.css";
+
+
 export default function CharacterSearch() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [apiUsers, setApiUsers] = useState([])
+    const [apiCharacters, setApiCharacters] = useState([])
     const [searchItem, setSearchItem] = useState('')
-    const [filteredUsers, setFilteredUsers] = useState([])
 
 
     useEffect(() => {
-        fetch('https://dummyjson.com/users')
-            .then(response => response.json())
+        fetch(`https://rickandmortyapi.com/api/character/?name=${searchItem}`)
+            .then(response => response.json()) 
             .then(data => {
-                setApiUsers(data.users)
-                setFilteredUsers(data.users)
+                setApiCharacters(data.results || [])
             })
+
             .catch(err => {
                 console.log(err)
-                // update the error state
                 setError(err)
             })
+
             .finally(() => {
-                // wether we sucessfully get the users or not, 
-                // we update the loading state
                 setLoading(false)
             })
-    }, [])
+    }, [searchItem])
 
 
     const handleInputChange = (e) => {
         const searchTerm = e.target.value;
         setSearchItem(searchTerm)
-
-        // filter the items using the apiUsers state
-        const filteredItems = apiUsers.filter((user) =>
-            user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        setFilteredUsers(filteredItems);
     }
+
     return (
         <div className="characterSearch">
-            <label htmlFor="characterInput" >Personagem:</label>
-            <input type="text" value={searchItem} onChange={handleInputChange} />
+            <input type="text" value={searchItem} onChange={handleInputChange} placeholder="Ex: Rick"/>
+            {searchItem == '' && <p>Enter a Rick and Morty character to start</p>}
             {loading && <p>Loading...</p>}
             {error && <p>There was an error loading the users</p>}
-            {!loading && !error && <CharacterList items={filteredUsers} />}
+            {!loading && !error && searchItem != '' && <CharacterList items={apiCharacters} />}
         </div>
     )
 }
